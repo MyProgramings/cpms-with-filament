@@ -6,9 +6,12 @@ use App\Filament\Resources\MedicationResource\Pages;
 use App\Filament\Resources\MedicationResource\RelationManagers;
 use App\Models\Medication;
 use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -17,13 +20,36 @@ class MedicationResource extends Resource
 {
     protected static ?string $model = Medication::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-beaker';
+
+    protected static ?string $navigationGroup = 'medication';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                //
+                TextInput::make('user_id')
+                    ->required()
+                    ->numeric(),
+                TextInput::make('medication_name')
+                    ->required()
+                    ->maxLength(255),
+                TextInput::make('quantity_in_stock')
+                    ->required()
+                    ->numeric()
+                    ->maxLength(255),
+                TextInput::make('dosage_strength')
+                    ->required()
+                    ->maxLength(255),
+                TextInput::make('dosage_form')
+                    ->required()
+                    ->maxLength(255),
+                TextInput::make('category')
+                    ->required()
+                    ->maxLength(255),
+                DatePicker::make('expiration_date')
+                    ->required()
+                    ->native(false),
             ]);
     }
 
@@ -31,7 +57,40 @@ class MedicationResource extends Resource
     {
         return $table
             ->columns([
-                //
+                TextColumn::make('id')
+                    ->sortable()
+                    ->searchable()
+                    ->label('ID'),
+                TextColumn::make('medication_name')
+                    ->sortable()
+                    ->searchable()
+                    ->label('Medication Name'),
+                TextColumn::make('quantity_in_stock')
+                    ->sortable()
+                    ->searchable()
+                    ->label('Quantity in Stock'),
+                TextColumn::make('dosage_strength')
+                    ->sortable()
+                    ->searchable()
+                    ->label('Dosage Strength'),
+                TextColumn::make('dosage_form')
+                    ->sortable()
+                    ->searchable()
+                    ->label('Dosage Form'),
+                TextColumn::make('category')
+                    ->sortable()
+                    ->searchable()
+                    ->label('Category'),
+                TextColumn::make('expiration_date')
+                    ->sortable()
+                    ->searchable()
+                    ->date()
+                    ->label('Expiration Date'),
+                TextColumn::make('unit_price')
+                    ->sortable()
+                    ->searchable()
+                    ->numeric()
+                    ->label('Unit Price'),
             ])
             ->filters([
                 //

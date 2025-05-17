@@ -4,45 +4,63 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\LabPrescriptionResource\Pages;
 use App\Filament\Resources\LabPrescriptionResource\RelationManagers;
+use App\Models\CheckupCategory;
 use App\Models\LabPrescription;
+use App\Models\LabTest;
 use Filament\Forms;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Collection;
 
 class LabPrescriptionResource extends Resource
 {
     protected static ?string $model = LabPrescription::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
+
+    protected static ?string $navigationGroup = 'Lab';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('test_description')
+                TextInput::make('test_description')
                     ->maxLength(255)
                     ->default(null),
-                Forms\Components\TextInput::make('result_description')
+                TextInput::make('result_description')
                     ->maxLength(255)
                     ->default(null),
-                Forms\Components\Select::make('user_id')
+                Select::make('checkup_category_id')
+                    ->relationship('checkupCategory', 'name')
+                    ->preload()
+                    ->live()
+                    ->afterStateUpdated(fn (Set $set) => $set('lab_test_id', null))
+                    ->required()
+                    ->native(false),
+                Select::make('lab_test_id')
+                    ->options(fn (Get $get): Collection => LabTest::query()
+                        ->where('checkup_category_id' , $get('checkup_category_id'))
+                        ->pluck('name', 'id'))
+                    ->preload()
+                    ->live()
+                    ->required()
+                    ->native(false),
+                Select::make('user_id')
                     ->relationship('user', 'name')
                     ->required(),
-                Forms\Components\Select::make('appointment_id')
+                Select::make('appointment_id')
                     ->relationship('appointment', 'id')
                     ->required(),
-                Forms\Components\Select::make('patient_id')
+                Select::make('patient_id')
                     ->relationship('patient', 'name')
-                    ->required(),
-                Forms\Components\Select::make('checkup_category_id')
-                    ->relationship('checkupCategory', 'name')
-                    ->required(),
-                Forms\Components\Select::make('lab_test_id')
-                    ->relationship('labTest', 'name')
                     ->required(),
             ]);
     }
@@ -104,7 +122,7 @@ class LabPrescriptionResource extends Resource
     {
         return [
             'index' => Pages\ListLabPrescriptions::route('/'),
-            'create' => Pages\CreateLabPrescription::route('/create'),
+            // 'create' => Pages\CreateLabPrescription::route('/create'),
             'view' => Pages\ViewLabPrescription::route('/{record}'),
             'edit' => Pages\EditLabPrescription::route('/{record}/edit'),
         ];

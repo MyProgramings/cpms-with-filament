@@ -17,7 +17,9 @@ class PsychologicalAssessmentResource extends Resource
 {
     protected static ?string $model = PsychologicalAssessment::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-face-smile';
+
+    protected static ?string $navigationGroup = 'Assessments';
 
     public static function form(Form $form): Form
     {

@@ -5,6 +5,7 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 use App\Models\Patient;
+use Illuminate\Support\Arr;
 
 class PatientFactory extends Factory
 {
@@ -20,6 +21,7 @@ class PatientFactory extends Factory
      */
     public function definition(): array
     {
+        $array = ['bg-red-500 text-white', 'bg-green-500 text-white', 'bg-blue-500 text-white', 'bg-yellow-500 text-white', 'bg-violet-500 text-white', 'bg-orange-500 text-white', 'bg-white text-black', 'bg-pink-500 text-white'];
         return [
             'name' => fake()->name(),
             'age' => fake()->numberBetween(-10000, 10000),
@@ -31,7 +33,7 @@ class PatientFactory extends Factory
             'nationality' => fake()->word(),
             'card_number' => fake()->word(),
             'file_number' => fake()->word(),
-            'file_colors' => fake()->word(),
+            'file_colors' => Arr::random($array),
             'permanent_address' => fake()->word(),
             'temporary_address' => fake()->word(),
             'near_mosque' => fake()->word(),

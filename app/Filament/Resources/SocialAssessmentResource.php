@@ -17,7 +17,9 @@ class SocialAssessmentResource extends Resource
 {
     protected static ?string $model = SocialAssessment::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-users';
+
+    protected static ?string $navigationGroup = 'Assessments';
 
     public static function form(Form $form): Form
     {
