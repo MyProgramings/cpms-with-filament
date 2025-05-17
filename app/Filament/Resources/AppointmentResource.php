@@ -6,9 +6,16 @@ use App\Filament\Resources\AppointmentResource\Pages;
 use App\Filament\Resources\AppointmentResource\RelationManagers;
 use App\Models\Appointment;
 use Filament\Forms;
+use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\BooleanColumn;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -17,32 +24,34 @@ class AppointmentResource extends Resource
 {
     protected static ?string $model = Appointment::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
+
+    protected static ?string $navigationGroup = 'Appointments';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\DateTimePicker::make('scheduled_at')
+                DateTimePicker::make('scheduled_at')
                     ->required()
                     ->columnSpanFull(),
-                Forms\Components\TextInput::make('appointment_type')
+                TextInput::make('name')
                     ->required()
                     ->maxLength(255)
-                    ->columnSpanFull(),
-                Forms\Components\Textarea::make('notes')
+                    ->columnSpanFull(),                    
+                Textarea::make('notes')
                     ->maxLength(65535)
                     ->columnSpanFull(),
-                Forms\Components\Checkbox::make('is_closed')
+                Checkbox::make('is_closed')
                     ->default(false)
                     ->columnSpanFull(),
-                Forms\Components\Select::make('patient_id')
+                Select::make('patient_id')
                     ->relationship('patient', 'name')
                     ->required()
                     ->preload()
                     ->searchable()
                     ->columnSpanFull(),
-                Forms\Components\Select::make('user_id')
+                Select::make('user_id')
                     ->relationship('user', 'name')
                     ->required()
                     ->preload()
@@ -55,21 +64,21 @@ class AppointmentResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id')
+                TextColumn::make('id')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('scheduled_at')
+                TextColumn::make('scheduled_at')
                     ->dateTime()
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('appointment_type')
+                TextColumn::make('appointment_type')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('notes')
+                TextColumn::make('notes')
                     ->limit(50)
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\BooleanColumn::make('is_closed')
+                BooleanColumn::make('is_closed')
                     ->sortable()
                     ->searchable(),
             ])
