@@ -5,10 +5,14 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\LabTestResource\Pages;
 use App\Filament\Resources\LabTestResource\RelationManagers;
 use App\Models\LabTest;
+use Dom\Text;
 use Filament\Forms;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -25,15 +29,66 @@ class LabTestResource extends Resource
     {
         return $form
             ->schema([
-                //
-            ]);
+                Select::make('checkup_category_id')
+                    ->relationship('checkupCategory', 'name')
+                    ->required()
+                    ->label('Checkup Category')
+                    ->preload()
+                    ->native(false),
+                TextInput::make('name')
+                    ->required()
+                    ->maxLength(255)
+                    ->label('Test Name'),
+                TextInput::make('unit')
+                    ->required()
+                    ->maxLength(255)
+                    ->label('Unit'),
+                TextInput::make('reference_min')
+                    ->required()
+                    ->numeric()
+                    ->label('Reference Min'),
+                TextInput::make('reference_max')
+                    ->required()
+                    ->numeric()
+                    ->label('Reference Max'),
+            ])->columns(3);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                //
+                TextColumn::make('id')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('checkupCategory.name')
+                    ->sortable()
+                    ->searchable()
+                    ->label('Checkup Category'),
+                TextColumn::make('name')
+                    ->sortable()
+                    ->searchable()
+                    ->label('Test Name'),
+                TextColumn::make('unit')
+                    ->sortable()
+                    ->searchable()
+                    ->label('Unit'),
+                TextColumn::make('reference_min')
+                    ->sortable()
+                    ->searchable()
+                    ->label('Reference Min'),
+                TextColumn::make('reference_max')
+                    ->sortable()
+                    ->searchable()
+                    ->label('Reference Max'),
+                TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //

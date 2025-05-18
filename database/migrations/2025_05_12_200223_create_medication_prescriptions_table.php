@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('preparer')->nullable();
             $table->string('quantity')->nullable();
             $table->string('total_quantity')->nullable();
-            $table->string('medicine_type')->nullable();
+            $table->string('category')->nullable();
             $table->string('power')->nullable();
             $table->integer('doses_per_day')->nullable();
             $table->integer('duration_days')->nullable();

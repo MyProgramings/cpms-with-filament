@@ -8,6 +8,7 @@ use App\Models\Appointment;
 use Filament\Forms;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -19,6 +20,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 
 class AppointmentResource extends Resource
 {
@@ -32,31 +34,20 @@ class AppointmentResource extends Resource
     {
         return $form
             ->schema([
-                DateTimePicker::make('scheduled_at')
-                    ->required()
-                    ->columnSpanFull(),
-                TextInput::make('name')
-                    ->required()
-                    ->maxLength(255)
-                    ->columnSpanFull(),                    
-                Textarea::make('notes')
-                    ->maxLength(65535)
-                    ->columnSpanFull(),
-                Checkbox::make('is_closed')
-                    ->default(false)
-                    ->columnSpanFull(),
                 Select::make('patient_id')
                     ->relationship('patient', 'name')
                     ->required()
                     ->preload()
-                    ->searchable()
-                    ->columnSpanFull(),
-                Select::make('user_id')
-                    ->relationship('user', 'name')
+                    ->searchable(),
+                Hidden::make('user_id')
+                    ->default(fn () => Auth::id()),
+                DateTimePicker::make('scheduled_at')
                     ->required()
-                    ->preload()
-                    ->searchable()
-                    ->columnSpanFull(),
+                    ->native(false),                   
+                Textarea::make('notes')
+                    ->maxLength(65535),
+                Checkbox::make('is_closed')
+                    ->default(false),
             ]);
     }
 
@@ -67,21 +58,18 @@ class AppointmentResource extends Resource
                 TextColumn::make('id')
                     ->sortable()
                     ->searchable(),
+                TextColumn::make('patient.name')
+                    ->sortable()
+                    ->searchable()
+                    ->label('Patient Name'),
                 TextColumn::make('scheduled_at')
                     ->dateTime()
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('appointment_type')
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('notes')
-                    ->limit(50)
                     ->sortable()
                     ->searchable(),
                 BooleanColumn::make('is_closed')
                     ->sortable()
                     ->searchable(),
-            ])
+            ])->defaultSort('created_at', 'ASC')
             ->filters([
                 //
             ])

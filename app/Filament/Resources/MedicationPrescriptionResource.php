@@ -4,14 +4,26 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\MedicationPrescriptionResource\Pages;
 use App\Filament\Resources\MedicationPrescriptionResource\RelationManagers;
+use App\Models\Medication;
 use App\Models\MedicationPrescription;
 use Filament\Forms;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 
 class MedicationPrescriptionResource extends Resource
 {
@@ -25,111 +37,116 @@ class MedicationPrescriptionResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('pharmacist')
+                Hidden::make('user_id')
+                    ->default(fn () => Auth::id()),
+                Hidden::make('pharmacist_id')
+                    ->default(fn () => Auth::id()),
+                Hidden::make('appointment_id')
+                    ->default(1),
+                Hidden::make('patient_id')
+                    ->default(1),
+                Select::make('category')
+                    ->options([
+                        'supplementary' => 'Supplementary',
+                        'chemist' => 'Chemist',
+                    ])
+                    ->preload()
+                    ->live()
+                    ->afterStateUpdated(fn (Set $set) => $set('medication_id', null))
+                    ->native(false)
+                    ->required()
+                    ->label('Medication Category'),
+                Select::make('medication_id')
+                    ->options(fn (Get $get): Collection => Medication::query()
+                        ->where('category', $get('category'))
+                        ->pluck('medication_name', 'id'))
+                    ->preload()
+                    ->live()
+                    ->native(false)
+                    ->required()
+                    ->label('Medication Name'),
+                TextInput::make('quantity')
                     ->maxLength(255)
-                    ->default(null),
-                Forms\Components\TextInput::make('preparer')
-                    ->maxLength(255)
-                    ->default(null),
-                Forms\Components\TextInput::make('quantity')
-                    ->maxLength(255)
-                    ->default(null),
-                Forms\Components\TextInput::make('total_quantity')
-                    ->maxLength(255)
-                    ->default(null),
-                Forms\Components\TextInput::make('medicine_type')
-                    ->maxLength(255)
-                    ->default(null),
-                Forms\Components\TextInput::make('power')
-                    ->maxLength(255)
-                    ->default(null),
-                Forms\Components\TextInput::make('doses_per_day')
                     ->numeric()
-                    ->default(null),
-                Forms\Components\TextInput::make('duration_days')
-                    ->numeric()
-                    ->default(null),
-                Forms\Components\TextInput::make('medication_notes')
+                    ->required(),
+                TextInput::make('power')
                     ->maxLength(255)
-                    ->default(null),
-                Forms\Components\Toggle::make('doctor_confirmed')
                     ->required(),
-                Forms\Components\DateTimePicker::make('doctor_confirmed_at'),
-                Forms\Components\Toggle::make('pharmacist_dispensed')
+                TextInput::make('doses_per_day')
+                    ->numeric()
                     ->required(),
-                Forms\Components\DateTimePicker::make('pharmacist_dispensed_at'),
-                Forms\Components\Select::make('pharmacist_id')
-                    ->relationship('pharmacist', 'name')
-                    ->default(null),
-                Forms\Components\Select::make('user_id')
-                    ->relationship('user', 'name')
+                TextInput::make('duration_days')
+                    ->numeric()
                     ->required(),
-                Forms\Components\Select::make('appointment_id')
-                    ->relationship('appointment', 'id')
+                TextInput::make('medication_notes')
+                    ->maxLength(255),
+                Toggle::make('doctor_confirmed')
                     ->required(),
-                Forms\Components\Select::make('patient_id')
-                    ->relationship('patient', 'name')
+                Toggle::make('pharmacist_dispensed')
                     ->required(),
-                Forms\Components\Select::make('medication_id')
-                    ->relationship('medication', 'id')
-                    ->required(),
-            ]);
+                TextInput::make('pharmacist')
+                    ->required()
+                    ->maxLength(255),
+                TextInput::make('preparer')
+                    ->required()
+                    ->maxLength(255),
+            ])->columns(3);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('pharmacist')
+                TextColumn::make('pharmacist')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('preparer')
+                TextColumn::make('preparer')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('quantity')
+                TextColumn::make('quantity')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('total_quantity')
+                TextColumn::make('total_quantity')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('medicine_type')
+                TextColumn::make('category')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('power')
+                TextColumn::make('power')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('doses_per_day')
+                TextColumn::make('doses_per_day')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('duration_days')
+                TextColumn::make('duration_days')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('medication_notes')
+                TextColumn::make('medication_notes')
                     ->searchable(),
-                Tables\Columns\IconColumn::make('doctor_confirmed')
+                IconColumn::make('doctor_confirmed')
                     ->boolean(),
-                Tables\Columns\TextColumn::make('doctor_confirmed_at')
+                TextColumn::make('doctor_confirmed_at')
                     ->dateTime()
                     ->sortable(),
-                Tables\Columns\IconColumn::make('pharmacist_dispensed')
+                IconColumn::make('pharmacist_dispensed')
                     ->boolean(),
-                Tables\Columns\TextColumn::make('pharmacist_dispensed_at')
+                TextColumn::make('pharmacist_dispensed_at')
                     ->dateTime()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('pharmacist.name')
+                TextColumn::make('pharmacist.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('user.name')
+                TextColumn::make('user.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('appointment.id')
+                TextColumn::make('appointment.id')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('patient.name')
+                TextColumn::make('patient.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('medication.id')
+                TextColumn::make('medication.id')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

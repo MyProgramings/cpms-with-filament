@@ -8,6 +8,7 @@ use App\Models\CheckupCategory;
 use App\Models\LabPrescription;
 use App\Models\LabTest;
 use Filament\Forms;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -19,6 +20,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 
 class LabPrescriptionResource extends Resource
 {
@@ -53,15 +55,16 @@ class LabPrescriptionResource extends Resource
                     ->live()
                     ->required()
                     ->native(false),
-                Select::make('user_id')
-                    ->relationship('user', 'name')
-                    ->required(),
+                Hidden::make('user_id')
+                    ->default(fn () => Auth::id()),
                 Select::make('appointment_id')
-                    ->relationship('appointment', 'id')
-                    ->required(),
+                    ->relationship('appointment', 'scheduled_at')
+                    ->required()
+                    ->native(false),
                 Select::make('patient_id')
                     ->relationship('patient', 'name')
-                    ->required(),
+                    ->required()
+                    ->native(false),
             ]);
     }
 
@@ -122,7 +125,7 @@ class LabPrescriptionResource extends Resource
     {
         return [
             'index' => Pages\ListLabPrescriptions::route('/'),
-            // 'create' => Pages\CreateLabPrescription::route('/create'),
+            'create' => Pages\CreateLabPrescription::route('/create'),
             'view' => Pages\ViewLabPrescription::route('/{record}'),
             'edit' => Pages\EditLabPrescription::route('/{record}/edit'),
         ];

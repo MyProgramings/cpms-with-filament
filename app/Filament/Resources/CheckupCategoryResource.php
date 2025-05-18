@@ -5,10 +5,13 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CheckupCategoryResource\Pages;
 use App\Filament\Resources\CheckupCategoryResource\RelationManagers;
 use App\Models\CheckupCategory;
+use Dom\Text;
 use Filament\Forms;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -25,7 +28,9 @@ class CheckupCategoryResource extends Resource
     {
         return $form
             ->schema([
-                //
+                TextInput::make('name')
+                    ->required()
+                    ->maxLength(255),
             ]);
     }
 
@@ -33,7 +38,21 @@ class CheckupCategoryResource extends Resource
     {
         return $table
             ->columns([
-                //
+                TextColumn::make('id')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('name')
+                    ->sortable()
+                    ->searchable()
+                    ->label('Category Name'),
+                TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //
