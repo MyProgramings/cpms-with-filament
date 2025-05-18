@@ -7,6 +7,8 @@ use App\Filament\Resources\MedicationResource\RelationManagers;
 use App\Models\Medication;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -15,6 +17,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 
 class MedicationResource extends Resource
 {
@@ -28,9 +31,15 @@ class MedicationResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('user_id')
-                    ->required()
-                    ->numeric(),
+                Hidden::make('user_id')
+                    ->default(fn () => Auth::id()),
+                Select::make('category')
+                    ->options([
+                        'supplementary' => 'Supplementary',
+                        'chemist' => 'Chemist',
+                    ])
+                    ->native(false)
+                    ->required(),
                 TextInput::make('medication_name')
                     ->required()
                     ->maxLength(255),
@@ -42,9 +51,6 @@ class MedicationResource extends Resource
                     ->required()
                     ->maxLength(255),
                 TextInput::make('dosage_form')
-                    ->required()
-                    ->maxLength(255),
-                TextInput::make('category')
                     ->required()
                     ->maxLength(255),
                 DatePicker::make('expiration_date')

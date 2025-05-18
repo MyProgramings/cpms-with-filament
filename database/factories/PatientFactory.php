@@ -21,19 +21,21 @@ class PatientFactory extends Factory
      */
     public function definition(): array
     {
-        $array = ['bg-red-500 text-white', 'bg-green-500 text-white', 'bg-blue-500 text-white', 'bg-yellow-500 text-white', 'bg-violet-500 text-white', 'bg-orange-500 text-white', 'bg-white text-black', 'bg-pink-500 text-white'];
+        $color = ['#ef4444', '#22c55e', '#3b82f6', '#eab308', '#8b5cf6', '#f97316', '#fff', '#ec4899'];
+        $gender = ['male', 'female'];
+        $social_status = ['married', 'single', 'divorced', 'widowed'];
         return [
             'name' => fake()->name(),
-            'age' => fake()->numberBetween(-10000, 10000),
+            'age' => fake()->numberBetween(2, 100),
             'place_of_birth' => fake()->word(),
             'birthday' => fake()->date(),
-            'gender' => fake()->regexify('[A-Za-z0-9]{10}'),
-            'social_status' => fake()->word(),
+            'gender' => Arr::random($gender),
+            'social_status' => Arr::random($social_status),
             'profession' => fake()->word(),
             'nationality' => fake()->word(),
             'card_number' => fake()->word(),
-            'file_number' => fake()->word(),
-            'file_colors' => Arr::random($array),
+            'file_number' => fake()->numberBetween(1000, 100000),
+            'file_colors' => Arr::random($color),
             'permanent_address' => fake()->word(),
             'temporary_address' => fake()->word(),
             'near_mosque' => fake()->word(),

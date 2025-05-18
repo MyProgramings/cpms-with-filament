@@ -9,6 +9,7 @@ use App\Models\Medication;
 use App\Models\MedicationPrescription;
 use App\Models\Patient;
 use App\Models\User;
+use Illuminate\Support\Arr;
 
 class MedicationPrescriptionFactory extends Factory
 {
@@ -24,12 +25,13 @@ class MedicationPrescriptionFactory extends Factory
      */
     public function definition(): array
     {
+        $category = ['supplementary', 'chemist'];
         return [
             'pharmacist' => fake()->word(),
             'preparer' => fake()->word(),
             'quantity' => fake()->word(),
             'total_quantity' => fake()->word(),
-            'medicine_type' => fake()->word(),
+            'category' => Arr::random($category),
             'power' => fake()->word(),
             'doses_per_day' => fake()->numberBetween(-10000, 10000),
             'duration_days' => fake()->numberBetween(-10000, 10000),

@@ -21,6 +21,7 @@ use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -41,7 +42,8 @@ class PatientResource extends Resource
                     ->schema([
                         TextInput::make('name')
                             ->required()
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->columnSpan(2),
                         TextInput::make('age')
                             ->required()
                             ->numeric()
@@ -58,16 +60,21 @@ class PatientResource extends Resource
                                 'female' => 'Female'
                             ])->native(false)
                             ->required(),
-                        TextInput::make('emasocial_statusil')
-                            ->required()
-                            ->maxLength(255),
+                        Select::make('emasocial_statusil')
+                            ->options([
+                                'married' => 'Married',
+                                'single' => 'Single',
+                                'widowed' => 'Widowed',
+                                'divorced' => 'Divorced',
+                            ])->native(false)
+                            ->required(),
                         TextInput::make('profession')
                             ->required()
                             ->maxLength(255),
                         TextInput::make('nationality')
                             ->required()
                             ->maxLength(255),
-                    ])->columns(3),
+                    ])->columns(4),
                 Section::make('Identification')
                     ->schema([
                         TextInput::make('card_number')
@@ -78,14 +85,14 @@ class PatientResource extends Resource
                             ->maxLength(255),
                         Radio::make('file_colors')
                             ->options([
-                                'bg-white text-black' => 'White',
-                                'bg-red-500 text-white' => 'Red',
-                                'bg-green-500 text-white' => 'Green',
-                                'bg-blue-500 text-white' => 'Blue',
-                                'bg-yellow-500 text-black' => 'Yellow',
-                                'bg-violet-500 text-white' => 'Violet',
-                                'bg-orange-500 text-white' => 'Orange',
-                                'bg-pink-500 text-black' => 'Pink',
+                                'white' => 'White',
+                                'red' => 'Red',
+                                'green' => 'Green',
+                                'blue' => 'Blue',
+                                'yellow' => 'Yellow',
+                                'violet' => 'Violet',
+                                'orange' => 'Orange',
+                                'pink' => 'Pink',
                             ])->inline()
                             ->columnSpanFull(),
                     ])->columns(3),
@@ -179,26 +186,7 @@ class PatientResource extends Resource
                 TextColumn::make('age')
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('place_of_birth')
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('birthday')
-                    ->date()
-                    ->sortable()
-                    ->searchable(),
                 TextColumn::make('gender')
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('social_status')
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('profession')
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('nationality')
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('card_number')
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('file_number')
@@ -207,51 +195,7 @@ class PatientResource extends Resource
                     ->extraAttributes(fn($record) => [
                         'class' => $record->file_colors,
                     ]),
-                TextColumn::make('permanent_address')
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('temporary_address')
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('near_mosque')
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('phone_number')
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('incident_date')
-                    ->date()
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('site_of_tumor')
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('type_of_tumor')
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('status')
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('doctors_name')
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('speciality')
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('reported_by')
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('date_of_last_contact')
-                    ->date()
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('cause_of_death')
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('notes_re')
-                    ->limit(50)
-                    ->sortable()
-                    ->searchable(),
+                ColorColumn::make('file_colors'),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -260,7 +204,7 @@ class PatientResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+            ])->defaultSort('created_at', 'desc')
             ->filters([
                 //
             ])
