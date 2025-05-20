@@ -17,6 +17,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
@@ -26,6 +27,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Mpdf\Mpdf;
 
 class PatientResource extends Resource
 {
@@ -176,6 +178,28 @@ class PatientResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->headerActions([
+                Action::make('Export to PDF')
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->action(function () {
+                        set_time_limit(300);
+
+                        $patients = Patient::all(['name', 'age', 'status', 'file_number', 'file_colors', 'permanent_address']);
+
+                        $mpdf = new Mpdf([
+                            'mode' => 'utf-8',
+                            'default_font' => 'arabic',
+                        ]);
+
+                        $html = view('exports.patients', ['patients' => $patients])->render();
+                        $mpdf->WriteHTML($html);
+
+                        return response()->streamDownload(function () use ($mpdf) {
+                            echo $mpdf->Output('', 'S');
+                        }, 'patients-report.pdf');
+                    })
+                    ->color('primary'),
+            ])
             ->columns([
                 TextColumn::make('id')
                     ->sortable()
