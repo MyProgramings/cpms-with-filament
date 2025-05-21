@@ -31,6 +31,7 @@ class Patient extends Model
         'temporary_address',
         'near_mosque',
         'phone_number',
+        'diagnosis',
         'incident_date',
         'previous_treatment',
         'chemotherapy',

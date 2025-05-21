@@ -28,6 +28,7 @@ return new class extends Migration
             $table->string('temporary_address')->nullable();
             $table->string('near_mosque')->nullable();
             $table->string('phone_number')->nullable();
+            $table->string('diagnosis')->nullable();
             $table->date('incident_date')->nullable();
             $table->boolean('previous_treatment')->nullable();
             $table->boolean('chemotherapy')->nullable();
