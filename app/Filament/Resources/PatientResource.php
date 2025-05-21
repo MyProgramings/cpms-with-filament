@@ -182,7 +182,6 @@ class PatientResource extends Resource
                 Action::make('Export to PDF')
                     ->icon('heroicon-o-document-arrow-down')
                     ->action(function () {
-                        set_time_limit(300);
 
                         $patients = Patient::all(['name', 'age', 'status', 'file_number', 'file_colors', 'permanent_address']);
 
