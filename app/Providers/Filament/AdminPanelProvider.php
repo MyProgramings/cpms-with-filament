@@ -37,8 +37,8 @@ class AdminPanelProvider extends PanelProvider
                 'success' => Color::Emerald,
                 'warning' => Color::Orange,
             ])
-            ->font('Inter')
-            ->brandName('CPMS')
+            ->font('Noto Kufi Arabic')
+            ->brandName('المركز الوطني لعلاج الأورام')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
