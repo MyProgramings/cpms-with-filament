@@ -77,9 +77,7 @@ class LabPrescriptionResource extends Resource
                 Tables\Columns\TextColumn::make('result_description')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('user.name')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('appointment.id')
+                    ->label('Laboratory name')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('patient.name')
@@ -112,6 +110,11 @@ class LabPrescriptionResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
     }
 
     public static function getRelations(): array

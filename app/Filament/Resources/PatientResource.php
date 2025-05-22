@@ -24,10 +24,10 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Mpdf\Mpdf;
 
 class PatientResource extends Resource
 {
@@ -62,7 +62,7 @@ class PatientResource extends Resource
                                 'female' => 'Female'
                             ])->native(false)
                             ->required(),
-                        Select::make('emasocial_statusil')
+                        Select::make('social_status')
                             ->options([
                                 'married' => 'Married',
                                 'single' => 'Single',
@@ -112,17 +112,24 @@ class PatientResource extends Resource
                         TextInput::make('phone_number')
                             ->required()
                             ->maxLength(255),
+                        TextInput::make('diagnosis')
+                            ->required()
+                            ->maxLength(255),
+                        Select::make('status')
+                            ->options([
+                                'recuperate' => 'Recuperate',
+                                'live' => 'Live',
+                                'dead' => 'Dead'
+                            ])
+                            ->required(),
                     ])->columns(3),
                 Section::make('Clinical History')
                     ->schema([
                         DatePicker::make('incident_date')
-                            ->required()
                             ->maxDate(now()),
                         TextInput::make('site_of_tumor')
-                            ->required()
                             ->maxLength(255),
                         TextInput::make('type_of_tumor')
-                            ->required()
                             ->maxLength(255),
                         Checkbox::make('previous_treatment')
                             ->default(false),
@@ -132,24 +139,14 @@ class PatientResource extends Resource
                             ->default(false),
                         Checkbox::make('surgery')
                             ->default(false),
-                        Select::make('status')
-                            ->options([
-                                'recuperate' => 'Recuperate',
-                                'live' => 'Live',
-                                'dead' => 'Dead'
-                            ])
-                            ->required(),
                     ])->columns(3),
                 Section::make('Treating Team')
                     ->schema([
                         TextInput::make('doctors_name')
-                            ->required()
                             ->maxLength(255),
                         TextInput::make('speciality')
-                            ->required()
                             ->maxLength(255),
                         TextInput::make('reported_by')
-                            ->required()
                             ->maxLength(255),
                     ])->columns(3),
                 Section::make('Risk Factors')
@@ -164,10 +161,8 @@ class PatientResource extends Resource
                 Section::make('Death & Final Notes')
                     ->schema([
                         DatePicker::make('date_of_last_contact')
-                            ->required()
                             ->maxDate(now()),
                         TextInput::make('cause_of_death')
-                            ->required()
                             ->maxLength(255),
                     ])->columns(3),
                 Textarea::make('notes_re')
@@ -178,27 +173,6 @@ class PatientResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->headerActions([
-                Action::make('Export to PDF')
-                    ->icon('heroicon-o-document-arrow-down')
-                    ->action(function () {
-
-                        $patients = Patient::all(['name', 'age', 'status', 'file_number', 'file_colors', 'permanent_address']);
-
-                        $mpdf = new Mpdf([
-                            'mode' => 'utf-8',
-                            'default_font' => 'arabic',
-                        ]);
-
-                        $html = view('exports.patients', ['patients' => $patients])->render();
-                        $mpdf->WriteHTML($html);
-
-                        return response()->streamDownload(function () use ($mpdf) {
-                            echo $mpdf->Output('', 'S');
-                        }, 'patients-report.pdf');
-                    })
-                    ->color('primary'),
-            ])
             ->columns([
                 TextColumn::make('id')
                     ->sortable()
@@ -210,6 +184,9 @@ class PatientResource extends Resource
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('gender')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('diagnosis')
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('file_number')
@@ -227,9 +204,16 @@ class PatientResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])->defaultSort('created_at', 'desc')
+            ])
             ->filters([
-                //
+                SelectFilter::make('status')
+                    ->multiple()
+                    ->options([
+                        'recuperate' => 'Recuperate',
+                        'live' => 'Live',
+                        'dead' => 'Dead',
+                    ])
+                    ->placeholder('All'),
             ])
             ->actions([
                 ViewAction::make(),
@@ -240,6 +224,16 @@ class PatientResource extends Resource
                     DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
+
+    public static function getNavigationBadgeColor(): string|array|null
+    {
+        return 'success';
     }
 
     public static function getRelations(): array
@@ -254,7 +248,7 @@ class PatientResource extends Resource
         return [
             'index' => Pages\ListPatients::route('/'),
             'create' => Pages\CreatePatient::route('/create'),
-            'view' => Pages\ViewPatient::route('/{record}'),
+            // 'view' => Pages\ViewPatient::route('/{record}'),
             'edit' => Pages\EditPatient::route('/{record}/edit'),
         ];
     }

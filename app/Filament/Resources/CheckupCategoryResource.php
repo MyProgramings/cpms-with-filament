@@ -68,6 +68,11 @@ class CheckupCategoryResource extends Resource
             ]);
     }
 
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
+
     public static function getRelations(): array
     {
         return [

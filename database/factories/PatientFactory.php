@@ -26,6 +26,8 @@ class PatientFactory extends Factory
         $gender = ['male', 'female'];
         $social_status = ['married', 'single', 'divorced', 'widowed'];
         $locations = ['حضرموت - الشحر', 'حضرموت - غيل باوزير', 'حضرموت - الشحر - الديس', 'حضرموت - المكلا - ريسوت', 'حضرموت - المكلا - القف', 'حضرموت - المكلا - حي النور', 'حضرموت - المكلا - حي السلام', 'حضرموت - المكلا - حي الوحدة', 'حضرموت - المكلا - حي الثورة', 'حضرموت - المكلا - حي 14 أكتوبر', 'حضرموت - المكلا - حي النهضة', 'حضرموت - المكلا - حي المعلا', 'حضرموت - الشحر - حي الفتح', 'حضرموت - الشحر - حي النصر', 'حضرموت - غيل باوزير - المركز', 'حضرموت - سيئون - حي النهضة' ];
+        $status = ['recuperate','live', 'dead'];
+        $diagnosis = ['Breast CA', 'Lung CA', 'Liver CA', 'Kidney CA', 'Prostate CA', 'Seminoma CA', 'Bladder CA', 'Thyroid CA', 'Stomach CA', 'Colon CA', 'Rectal CA', 'Pancreatic CA', 'Ovarian CA', 'Cervical CA', 'Endometrial CA', 'Esophageal CA'];
         return [
             'name' => Arr::random($name),
             'age' => fake()->numberBetween(2, 100),
@@ -42,6 +44,7 @@ class PatientFactory extends Factory
             'temporary_address' => fake()->word(),
             'near_mosque' => fake()->word(),
             'phone_number' => fake()->phoneNumber(),
+            'diagnosis' => Arr::random($diagnosis),
             'incident_date' => fake()->date(),
             'previous_treatment' => fake()->boolean(),
             'chemotherapy' => fake()->boolean(),
@@ -49,7 +52,7 @@ class PatientFactory extends Factory
             'surgery' => fake()->boolean(),
             'site_of_tumor' => fake()->word(),
             'type_of_tumor' => fake()->word(),
-            'status' => fake()->word(),
+            'status' => Arr::random($status),
             'doctors_name' => fake()->word(),
             'speciality' => fake()->word(),
             'reported_by' => fake()->word(),
