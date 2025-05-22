@@ -17,8 +17,8 @@ return new class extends Migration
             $table->id();
             $table->string('pharmacist')->nullable();
             $table->string('preparer')->nullable();
-            $table->string('quantity')->nullable();
-            $table->string('total_quantity')->nullable();
+            $table->integer('quantity')->nullable();
+            $table->integer('total_quantity')->nullable();
             $table->string('category')->nullable();
             $table->string('power')->nullable();
             $table->integer('doses_per_day')->nullable();

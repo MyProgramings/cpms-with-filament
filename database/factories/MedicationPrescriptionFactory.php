@@ -29,8 +29,8 @@ class MedicationPrescriptionFactory extends Factory
         return [
             'pharmacist' => fake()->word(),
             'preparer' => fake()->word(),
-            'quantity' => fake()->word(),
-            'total_quantity' => fake()->word(),
+            'quantity' => fake()->numberBetween(1, 10),
+            'total_quantity' => fake()->numberBetween(1, 10),
             'category' => Arr::random($category),
             'power' => fake()->word(),
             'doses_per_day' => fake()->numberBetween(-10000, 10000),
