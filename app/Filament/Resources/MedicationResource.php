@@ -32,7 +32,7 @@ class MedicationResource extends Resource
         return $form
             ->schema([
                 Hidden::make('user_id')
-                    ->default(fn () => Auth::id()),
+                    ->default(fn() => Auth::id()),
                 Select::make('category')
                     ->options([
                         'supplementary' => 'Supplementary',
