@@ -38,9 +38,9 @@ class MedicationPrescriptionResource extends Resource
         return $form
             ->schema([
                 Hidden::make('user_id')
-                    ->default(fn () => Auth::id()),
+                    ->default(fn() => Auth::id()),
                 Hidden::make('pharmacist_id')
-                    ->default(fn () => Auth::id()),
+                    ->default(fn() => Auth::id()),
                 Hidden::make('appointment_id')
                     ->default(1),
                 Hidden::make('patient_id')
@@ -52,12 +52,12 @@ class MedicationPrescriptionResource extends Resource
                     ])
                     ->preload()
                     ->live()
-                    ->afterStateUpdated(fn (Set $set) => $set('medication_id', null))
+                    ->afterStateUpdated(fn(Set $set) => $set('medication_id', null))
                     ->native(false)
                     ->required()
                     ->label('Medication Category'),
                 Select::make('medication_id')
-                    ->options(fn (Get $get): Collection => Medication::query()
+                    ->options(fn(Get $get): Collection => Medication::query()
                         ->where('category', $get('category'))
                         ->pluck('medication_name', 'id'))
                     ->preload()

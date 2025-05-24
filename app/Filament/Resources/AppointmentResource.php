@@ -40,10 +40,10 @@ class AppointmentResource extends Resource
                     ->preload()
                     ->searchable(),
                 Hidden::make('user_id')
-                    ->default(fn () => Auth::id()),
+                    ->default(fn() => Auth::id()),
                 DateTimePicker::make('scheduled_at')
                     ->required()
-                    ->native(false),                   
+                    ->native(false),
                 Textarea::make('notes')
                     ->maxLength(65535),
                 Checkbox::make('is_closed')

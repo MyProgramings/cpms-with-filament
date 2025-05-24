@@ -44,19 +44,19 @@ class LabPrescriptionResource extends Resource
                     ->relationship('checkupCategory', 'name')
                     ->preload()
                     ->live()
-                    ->afterStateUpdated(fn (Set $set) => $set('lab_test_id', null))
+                    ->afterStateUpdated(fn(Set $set) => $set('lab_test_id', null))
                     ->required()
                     ->native(false),
                 Select::make('lab_test_id')
-                    ->options(fn (Get $get): Collection => LabTest::query()
-                        ->where('checkup_category_id' , $get('checkup_category_id'))
+                    ->options(fn(Get $get): Collection => LabTest::query()
+                        ->where('checkup_category_id', $get('checkup_category_id'))
                         ->pluck('name', 'id'))
                     ->preload()
                     ->live()
                     ->required()
                     ->native(false),
                 Hidden::make('user_id')
-                    ->default(fn () => Auth::id()),
+                    ->default(fn() => Auth::id()),
                 Select::make('appointment_id')
                     ->relationship('appointment', 'scheduled_at')
                     ->required()
